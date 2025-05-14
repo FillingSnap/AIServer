@@ -1,37 +1,18 @@
-# Copyright 2021 Google LLC
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#      http://www.apache.org/licenses/LICENSE-2.0
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Python 슬림 이미지 사용
+FROM python:3.9-slim
 
-# Use the official lightweight Python image.
-# https://hub.docker.com/_/python
-FROM python:3.13.3-slim
+# 작업 디렉토리 설정
+WORKDIR /app
 
-# Allow statements and log messages to immediately appear in the Cloud Run logs
-ENV PYTHONUNBUFFERED 1
+# 의존성 복사 및 설치
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Create and change to the app directory.
-WORKDIR /usr/src/app
+# 앱 코드 복사
+COPY . .
 
-# Copy application dependency manifests to the container image.
-# Copying this separately prevents re-running pip install on every code change.
-COPY requirements.txt ./
+# Cloud Run은 8080 포트 사용
+ENV PORT=8080
 
-# Install dependencies.
-RUN pip install -r requirements.txt
-
-# Copy local code to the container image.
-COPY . ./
-
-# Run the web service on container startup.
-# Use gunicorn webserver with one worker process and 8 threads.
-# For environments with multiple CPU cores, increase the number of workers
-# to be equal to the cores available.
-# Timeout is set to 0 to disable the timeouts of the workers to allow Cloud Run to handle instance scaling.
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
+# 앱 실행
+CMD ["python", "main.py"]
