@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify, Response
 import time
-from PIL import Image
-from io import BytesIO
 
 app = Flask(__name__)
 
