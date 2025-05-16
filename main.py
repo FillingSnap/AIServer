@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify, Response
 import time
+from PIL import Image
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -10,8 +12,11 @@ def home():
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.get_json()
-    return jsonify({"result": f"AI 일기 test: {data.get('text', '')}"})
+    # image = data.get("image", '')
+    # text = data.get("text", '')
 
+    # return jsonify({"result": f"AI 일기 test: {data.get('text', '')}"})
+    return jsonify({"result": data})
 
 @app.route("/stream")
 def stream_by_character():
