@@ -3,5 +3,8 @@ gunicorn==23.0.0
 
 requests==2.32.0
 structlog==25.1.0
-
 google-auth==2.3.2
+
+openai==1.23.2
+google-cloud-vision==3.7.2
+Pillow==10.3.0
