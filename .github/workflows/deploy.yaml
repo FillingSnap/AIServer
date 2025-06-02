@@ -1,0 +1,14 @@
+- name: Decode service account key
+  run: |
+    echo "${{ secrets.GOOGLE_API_KEY_B64 }}" | base64 --decode > key.json
+  shell: bash
+
+- name: Deploy to Cloud Run
+  run: |
+    gcloud run deploy flask-diary \
+      --source . \
+      --region asia-northeast3 \
+      --platform managed \
+      --allow-unauthenticated
+  env:
+    GOOGLE_API_KEY: key.json
