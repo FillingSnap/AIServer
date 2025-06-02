@@ -25,7 +25,7 @@ def generate():
     # return jsonify({"result": f"AI 일기 test: {data.get('text', '')}"})
     return jsonify({"result": data})
 
-@app.route("/stream")
+@app.route("/stream", methods=["POST"])
 def stream_by_character():
     data_list = request.get_json()
     all_keywords = []
