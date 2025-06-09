@@ -30,6 +30,7 @@ def stream_by_character():
     data_list = request.get_json()
     all_keywords = []
     text_list = []
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
     # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
     PROMPT = load_json(f'config/PROMPTS.json')
@@ -68,8 +69,6 @@ def stream_by_character():
         temperature=0.95,
         stream=False,
     )
-
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     text = text_response.choices[0].message.content
     
     def generate():
