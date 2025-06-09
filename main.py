@@ -32,6 +32,9 @@ def stream_by_character():
         all_keywords = []
         text_list = []
 
+        os.environ.pop("HTTP_PROXY", None)
+        os.environ.pop("HTTPS_PROXY", None)
+
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
         # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
