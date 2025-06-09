@@ -36,7 +36,7 @@ def stream_by_character():
         os.environ.pop("HTTPS_PROXY", None)
 
         KEY = "notkey"
-        client = OpenAI(api_key=KEY)
+        # client = OpenAI(api_key=KEY)
 
         # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
         PROMPT = load_json(f'config/PROMPTS.json')
@@ -68,23 +68,26 @@ def stream_by_character():
         final_prompt = f"키워드: {keyword_prompt}\n"
         final_prompt += f"텍스트: {text_prompt}"
 
-        messages.append({'role': 'user', 'content': final_prompt})
-        text_response = client.chat.completions.create(
-            model='gpt-4o',
-            messages=messages,
-            temperature=0.95,
-            stream=False,
-        )
-        text = text_response.choices[0].message.content
+        # messages.append({'role': 'user', 'content': final_prompt})
+        # text_response = client.chat.completions.create(
+        #     model='gpt-4o',
+        #     messages=messages,
+        #     temperature=0.95,
+        #     stream=False,
+        # )
+        # text = text_response.choices[0].message.content
         
-        def generate():
-            for ch in text:
-                yield ch
-                time.sleep(0.2)  # 글자당 지연 시간
+        # def generate():
+        #     for ch in text:
+        #         yield ch
+        #         time.sleep(0.2)  # 글자당 지연 시간
 
-        return Response(generate(), mimetype="text/plain")
+        # return Response(generate(), mimetype="text/plain")
+        return jsonify({"KEY": os.getenv("OPENAI_API_KEY"),
+                        "text": final_prompt,
+                        "keywords": all_keywords,})
     except Exception as e:
-            return jsonify({"error": f"오류 발생: {str(e)}"}), 500
+            return jsonify({"error": f"{str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
