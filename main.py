@@ -110,8 +110,7 @@ def stream_by_character():
 
         # return Response(generate(), mimetype="text/plain")
         return jsonify({"KEY": os.getenv("OPENAI_API_KEY"),
-                        "text": final_prompt,
-                        "keywords": all_keywords,})
+                        "text": final_prompt,})
     except Exception as e:
             return jsonify({"error": f"{str(e)}"}), 500
 
