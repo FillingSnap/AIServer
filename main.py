@@ -27,6 +27,32 @@ def generate():
 
 @app.route("/stream", methods=["POST"])
 def stream_by_character():
+    # JSON 파일 로딩
+    def load_json(path):
+        with open(path, 'r', encoding='utf-8') as json_file:
+            return json.load(json_file)
+
+    def detect_objects(image_link):
+        client = vision.ImageAnnotatorClient()
+        
+        response = requests.get(image_link)
+        image = Image.open(BytesIO(response.content))
+
+        img_byte_arr = BytesIO()
+        image.save(img_byte_arr, format='JPEG')
+        img_byte_arr = img_byte_arr.getvalue()
+
+        image = vision.Image(content=img_byte_arr)
+        response = client.object_localization(image=image)
+        objects = response.localized_object_annotations
+        
+        filtered_names = set()
+        for obj in objects:
+            if obj.score >= 0.65:
+                filtered_names.add(obj.name)  # set으로 중복 제거
+
+        return filtered_names
+    
     try:
         data_list = request.get_json()
         all_keywords = []
@@ -91,29 +117,3 @@ def stream_by_character():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
-
-# JSON 파일 로딩
-def load_json(path):
-    with open(path, 'r', encoding='utf-8') as json_file:
-        return json.load(json_file)
-
-def detect_objects(image_link):
-    client = vision.ImageAnnotatorClient()
-    
-    response = requests.get(image_link)
-    image = Image.open(BytesIO(response.content))
-
-    img_byte_arr = BytesIO()
-    image.save(img_byte_arr, format='JPEG')
-    img_byte_arr = img_byte_arr.getvalue()
-
-    image = vision.Image(content=img_byte_arr)
-    response = client.object_localization(image=image)
-    objects = response.localized_object_annotations
-    
-    filtered_names = set()
-    for obj in objects:
-        if obj.score >= 0.65:
-            filtered_names.add(obj.name)  # set으로 중복 제거
-
-    return filtered_names
