@@ -87,7 +87,7 @@ def stream_by_character():
             image_link = data.get("image", '')
             text_list.append(data.get("text", ''))
             keywords = detect_objects(image_link)
-            all_keywords.append(keywords)
+            all_keywords.append(list(keywords))
 
         text_prompt = f"[{','.join(text_list)}]"
         keyword_prompt = ','.join(f"[{','.join(keyword)}]" for keyword in all_keywords)
@@ -109,8 +109,8 @@ def stream_by_character():
         #         time.sleep(0.2)  # 글자당 지연 시간
 
         # return Response(generate(), mimetype="text/plain")
-        return jsonify({"KEY": os.getenv("OPENAI_API_KEY"),
-                        "text": final_prompt,})
+        return jsonify({"KEY": os.getenv("OPENAI_API_KEY")})
+    
     except Exception as e:
             return jsonify({"error": f"{str(e)}"}), 500
 
