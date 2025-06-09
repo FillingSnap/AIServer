@@ -109,7 +109,8 @@ def stream_by_character():
         #         time.sleep(0.2)  # 글자당 지연 시간
 
         # return Response(generate(), mimetype="text/plain")
-        return jsonify({"KEY": os.getenv("OPENAI_API_KEY")})
+        return jsonify({"KEY": os.getenv("OPENAI_API_KEY"),
+                        "text": final_prompt})
     
     except Exception as e:
             return jsonify({"error": f"{str(e)}"}), 500
