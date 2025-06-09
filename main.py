@@ -23,7 +23,7 @@ def generate():
 
     
     # return jsonify({"result": f"AI 일기 test: {data.get('text', '')}"})
-    return jsonify({"result": data})
+    return jsonify({"result": data, "KEY": os.getenv("OPENAI_API_KEY")})
 
 @app.route("/stream", methods=["POST"])
 def stream_by_character():
@@ -31,9 +31,7 @@ def stream_by_character():
         data_list = request.get_json()
         all_keywords = []
         text_list = []
-        print("Received data:", data_list)
-        print(os.getenv("OPENAI_API_KEY"))
-        
+
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
         # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
