@@ -8,6 +8,7 @@ import os
 import time
 import requests
 import json
+import secrets
 
 app = Flask(__name__)
 
@@ -61,6 +62,7 @@ def stream_by_character():
         os.environ.pop("HTTP_PROXY", None)
         os.environ.pop("HTTPS_PROXY", None)
 
+        default_api_key = f"sk-{secrets.token_hex(21)}"
         KEY = os.getenv("OPENAI_API_KEY")
         client = OpenAI(api_key=KEY)
 
