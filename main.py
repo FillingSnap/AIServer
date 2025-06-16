@@ -64,7 +64,7 @@ def stream_by_character():
         os.environ.pop("HTTPS_PROXY", None)
 
         KEY = os.getenv("OPENAI_API_KEY")
-        client = OpenAI(api_key=KEY)
+        # client = OpenAI(api_key=KEY)
 
         # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
         PROMPT = load_json(f'config/PROMPTS.json')
@@ -114,7 +114,9 @@ def stream_by_character():
         return Response(
                 json.dumps({
                     "KEY": os.getenv("OPENAI_API_KEY"),
-                    "text": final_prompt
+                    "text": final_prompt,
+                    "openai": f"{openai.__version__}",
+                    "HTTP_PROXY": f"{os.environ.get("HTTP_PROXY")}"
                 }, ensure_ascii=False),
                 status=200,
                 mimetype='application/json'
