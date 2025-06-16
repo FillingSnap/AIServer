@@ -116,7 +116,6 @@ def stream_by_character():
                     "KEY": os.getenv("OPENAI_API_KEY"),
                     "text": final_prompt,
                     "openai": f"{openai.__version__}",
-                    "HTTP_PROXY": f"{os.environ.get("HTTP_PROXY")}"
                 }, ensure_ascii=False),
                 status=200,
                 mimetype='application/json'
