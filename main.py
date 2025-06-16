@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, Response
 from google.cloud import vision
-from openai import OpenAI
 import openai
 from PIL import Image
 from io import BytesIO
@@ -110,7 +109,7 @@ def stream_by_character():
         #     temperature=0.95,
         #     stream=False,
         # )
-        
+
         text = text_response.choices[0].message.content
         
         def generate():
