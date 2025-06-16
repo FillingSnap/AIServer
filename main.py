@@ -114,7 +114,7 @@ def stream_by_character():
         
         def generate():
             for ch in text:
-                yield f"ch"
+                yield f"{ch}\n\n"
                 time.sleep(0.2)  # 글자당 지연 시간
 
         return Response(generate(), mimetype="text/event-stream")
