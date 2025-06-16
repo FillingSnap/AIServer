@@ -59,6 +59,9 @@ def stream_by_character():
         all_keywords = []
         text_list = []
 
+        print("HTTP_PROXY:", os.environ.get("HTTP_PROXY"))
+        print("HTTPS_PROXY:", os.environ.get("HTTPS_PROXY"))
+        
         os.environ.pop("HTTP_PROXY", None)
         os.environ.pop("HTTPS_PROXY", None)
 
