@@ -121,9 +121,7 @@ def stream_by_character():
             )
     
     except Exception as e:
-            return jsonify({"error": f"{str(e)}",
-                            "openai": f"{openai.__version__}",
-                            "HTTP_PROXY": f"{os.environ.get("HTTP_PROXY")}"}), 500
+            return jsonify({"error": f"{str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
