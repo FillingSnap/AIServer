@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Response
 from google.cloud import vision
 from openai import OpenAI
+import openai
 from PIL import Image
 from io import BytesIO
 
@@ -121,7 +122,7 @@ def stream_by_character():
     
     except Exception as e:
             return jsonify({"error": f"{str(e)}",
-                            "openai": f"{OpenAI.__version__}",
+                            "openai": f"{openai.__version__}",
                             "HTTP_PROXY": f"{os.environ.get("HTTP_PROXY")}"}), 500
 
 if __name__ == "__main__":
