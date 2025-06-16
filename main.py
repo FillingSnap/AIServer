@@ -59,13 +59,9 @@ def stream_by_character():
         all_keywords = []
         text_list = []
 
-        print("HTTP_PROXY:", os.environ.get("HTTP_PROXY"))
-        print("HTTPS_PROXY:", os.environ.get("HTTPS_PROXY"))
-        
         os.environ.pop("HTTP_PROXY", None)
         os.environ.pop("HTTPS_PROXY", None)
 
-        default_api_key = f"sk-{secrets.token_hex(21)}"
         KEY = os.getenv("OPENAI_API_KEY")
         client = OpenAI(api_key=KEY)
 
@@ -124,7 +120,9 @@ def stream_by_character():
             )
     
     except Exception as e:
-            return jsonify({"error": f"{str(e)}"}), 500
+            return jsonify({"error": f"{str(e)}",
+                            "openai": f"{OpenAI.__version__}",
+                            "HTTP_PROXY": f"{os.environ.get("HTTP_PROXY")}"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
