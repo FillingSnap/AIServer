@@ -114,10 +114,10 @@ def stream_by_character():
         
         def generate():
             for ch in text:
-                yield ch
+                yield f"ch"
                 time.sleep(0.2)  # 글자당 지연 시간
 
-        return Response(generate(), mimetype="text/plain")
+        return Response(generate(), mimetype="text/event-stream")
         # return Response(
         #         json.dumps({
         #             "KEY": os.getenv("OPENAI_API_KEY"),
@@ -131,6 +131,15 @@ def stream_by_character():
     except Exception as e:
             return jsonify({"error": f"{str(e)}"}), 500
 
+@app.route("/stream_test", methods=["POST"])
+def stream():
+    text = "AI 일기 생성 테스트입니다. 이 텍스트는 스트리밍 방식으로 전송됩니다."
+    def generate():
+        for ch in text:
+            yield ch
+            time.sleep(0.2)  # 글자당 지연 시간
+
+    return Response(generate(), mimetype="text/event-stream")
 if __name__ == "__main__":
     os.environ.pop("HTTP_PROXY", None)
     os.environ.pop("HTTPS_PROXY", None)
