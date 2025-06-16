@@ -60,11 +60,9 @@ def stream_by_character():
         all_keywords = []
         text_list = []
 
-        os.environ.pop("HTTP_PROXY", None)
-        os.environ.pop("HTTPS_PROXY", None)
-
         KEY = os.getenv("OPENAI_API_KEY")
         # client = OpenAI(api_key=KEY)
+        openai.api_key = os.getenv("OPENAI_API_KEY")
 
         # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
         PROMPT = load_json(f'config/PROMPTS.json')
@@ -96,6 +94,15 @@ def stream_by_character():
         final_prompt = f"키워드: {keyword_prompt}\n"
         final_prompt += f"텍스트: {text_prompt}"
 
+        messages.append({'role': 'user', 'content': final_prompt})
+
+        text_response = openai.ChatCompletion.create(
+            model='gpt-4o',
+            messages=messages,
+            temperature=0.95,
+            stream=False,
+        )
+
         # messages.append({'role': 'user', 'content': final_prompt})
         # text_response = client.chat.completions.create(
         #     model='gpt-4o',
@@ -110,19 +117,21 @@ def stream_by_character():
         #         yield ch
         #         time.sleep(0.2)  # 글자당 지연 시간
 
-        # return Response(generate(), mimetype="text/plain")
-        return Response(
-                json.dumps({
-                    "KEY": os.getenv("OPENAI_API_KEY"),
-                    "text": final_prompt,
-                    "openai": f"{openai.__version__}",
-                }, ensure_ascii=False),
-                status=200,
-                mimetype='application/json'
-            )
+        return Response(generate(), mimetype="text/plain")
+        # return Response(
+        #         json.dumps({
+        #             "KEY": os.getenv("OPENAI_API_KEY"),
+        #             "text": final_prompt,
+        #             "openai": f"{openai.__version__}",
+        #         }, ensure_ascii=False),
+        #         status=200,
+        #         mimetype='application/json'
+        #     )
     
     except Exception as e:
             return jsonify({"error": f"{str(e)}"}), 500
 
 if __name__ == "__main__":
+    os.environ.pop("HTTP_PROXY", None)
+    os.environ.pop("HTTPS_PROXY", None)
     app.run(host="0.0.0.0", port=8080)
