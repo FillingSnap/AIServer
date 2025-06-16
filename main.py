@@ -110,12 +110,13 @@ def stream_by_character():
         #     temperature=0.95,
         #     stream=False,
         # )
-        # text = text_response.choices[0].message.content
         
-        # def generate():
-        #     for ch in text:
-        #         yield ch
-        #         time.sleep(0.2)  # 글자당 지연 시간
+        text = text_response.choices[0].message.content
+        
+        def generate():
+            for ch in text:
+                yield ch
+                time.sleep(0.2)  # 글자당 지연 시간
 
         return Response(generate(), mimetype="text/plain")
         # return Response(
