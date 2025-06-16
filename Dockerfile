@@ -6,7 +6,9 @@ WORKDIR /app
 
 # 의존성 복사 및 설치
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# ❗️OpenAI 잔재 제거 후 설치
+RUN pip uninstall -y openai && pip install --no-cache-dir -r requirements.txt
 
 # 앱 코드 복사
 COPY . .
