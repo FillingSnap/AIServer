@@ -37,7 +37,7 @@ def stream_by_character():
         client = vision.ImageAnnotatorClient()
         
         response = requests.get(image_link)
-        image = Image.open(BytesIO(response.content))
+        image = Image.open(BytesIO(response.content)).convert('RGB')
 
         img_byte_arr = BytesIO()
         image.save(img_byte_arr, format='JPEG')
@@ -136,7 +136,7 @@ def stream():
     text = "AI 일기 생성 테스트입니다. 이 텍스트는 스트리밍 방식으로 전송됩니다."
     def generate():
         for ch in text:
-            yield ch
+            yield f"data: {ch}\n\n"
             time.sleep(0.2)  # 글자당 지연 시간
 
     return Response(generate(), mimetype="text/event-stream")
