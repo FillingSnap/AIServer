@@ -96,7 +96,7 @@ def stream_by_character():
         messages.append({'role': 'user', 'content': final_prompt})
 
         text_response = openai.ChatCompletion.create(
-            model='gpt-4o',
+            model='gpt-5',
             messages=messages,
             temperature=0.95,
             stream=False,
