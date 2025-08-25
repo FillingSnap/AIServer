@@ -116,8 +116,6 @@ def stream_by_character():
             for ch in text:
                 yield f"data: {ch}\n\n"
                 time.sleep(0.2)  # 글자당 지연 시간
-
-        return Response(generate(), mimetype="text/event-stream")
         # return Response(
         #         json.dumps({
         #             "KEY": os.getenv("OPENAI_API_KEY"),
@@ -131,7 +129,8 @@ def stream_by_character():
     except Exception as e:
         payload = json.dumps({"message": str(e)})
         yield f"event: error\ndata: {payload}\n\n"
-        return
+
+    return Response(generate(), mimetype="text/event-stream")
 
 @app.route("/stream_test", methods=["POST"])
 def stream():
