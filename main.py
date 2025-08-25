@@ -113,6 +113,7 @@ def stream_by_character():
         except Exception as e:
             payload = json.dumps({"message": str(e)})
             yield f"event: error\ndata: {payload}\n\n"
+            return
 
     return Response(generate_diary(), mimetype="text/event-stream")
 
