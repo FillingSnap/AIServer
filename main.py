@@ -54,70 +54,69 @@ def stream_by_character():
 
         return filtered_names
     
-    try:
-        data_list = request.get_json()
-        all_keywords = []
-        text_list = []
+    data_list = request.get_json()
+    all_keywords = []
+    text_list = []
 
-        KEY = os.getenv("OPENAI_API_KEY")
-        # client = OpenAI(api_key=KEY)
-        openai.api_key = os.getenv("OPENAI_API_KEY")
+    KEY = os.getenv("OPENAI_API_KEY")
+    # client = OpenAI(api_key=KEY)
+    openai.api_key = os.getenv("OPENAI_API_KEY")
 
-        # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
-        PROMPT = load_json(f'config/PROMPTS.json')
-        DIARY_EXAMPLE = load_json(f'config/DIARY.json')
+    # JSON 파일로부터 시스템 프롬프트 및 예시 불러오기
+    PROMPT = load_json(f'config/PROMPTS.json')
+    DIARY_EXAMPLE = load_json(f'config/DIARY.json')
 
-        messages = [{'role': 'system', 'content': PROMPT['system_prompt']}]
-        # (Few-shot 예시 추가) 예시가 필요하면 추가
-        for example in DIARY_EXAMPLE:
-            user_example = "키워드: "
-            keyword_list = []
-            for keyword in example['keyword']:
-                keyword_list += [f"[{','.join(keyword)}]"]
-            user_example += ','.join(keyword_list)
-            user_example += "\n"
+    messages = [{'role': 'system', 'content': PROMPT['system_prompt']}]
+    # (Few-shot 예시 추가) 예시가 필요하면 추가
+    for example in DIARY_EXAMPLE:
+        user_example = "키워드: "
+        keyword_list = []
+        for keyword in example['keyword']:
+            keyword_list += [f"[{','.join(keyword)}]"]
+        user_example += ','.join(keyword_list)
+        user_example += "\n"
 
-            user_example += f"텍스트: [{','.join(example['text'])}]"
-            
-            messages.append({'role': 'user', 'content': user_example})
-            messages.append({'role': 'assistant', 'content': example['content']})
+        user_example += f"텍스트: [{','.join(example['text'])}]"
         
-        for data in data_list:
-            image_link = data.get("image", '')
-            text_list.append(data.get("text", ''))
-            keywords = detect_objects(image_link)
-            all_keywords.append(list(keywords))
+        messages.append({'role': 'user', 'content': user_example})
+        messages.append({'role': 'assistant', 'content': example['content']})
+    
+    for data in data_list:
+        image_link = data.get("image", '')
+        text_list.append(data.get("text", ''))
+        keywords = detect_objects(image_link)
+        all_keywords.append(list(keywords))
 
-        text_prompt = f"[{','.join(text_list)}]"
-        keyword_prompt = ','.join(f"[{','.join(keyword)}]" for keyword in all_keywords)
-        final_prompt = f"키워드: {keyword_prompt}\n"
-        final_prompt += f"텍스트: {text_prompt}"
+    text_prompt = f"[{','.join(text_list)}]"
+    keyword_prompt = ','.join(f"[{','.join(keyword)}]" for keyword in all_keywords)
+    final_prompt = f"키워드: {keyword_prompt}\n"
+    final_prompt += f"텍스트: {text_prompt}"
 
-        messages.append({'role': 'user', 'content': final_prompt})
+    messages.append({'role': 'user', 'content': final_prompt})
 
-        text_response = openai.ChatCompletion.create(
-            model='gpt-5',
-            messages=messages,
-            temperature=0.95,
-            stream=False,
-        )
+    text_response = openai.ChatCompletion.create(
+        model='gpt-5',
+        messages=messages,
+        temperature=0.95,
+        stream=False,
+    )
 
-        # messages.append({'role': 'user', 'content': final_prompt})
-        # text_response = client.chat.completions.create(
-        #     model='gpt-4o',
-        #     messages=messages,
-        #     temperature=0.95,
-        #     stream=False,
-        # )
+    # messages.append({'role': 'user', 'content': final_prompt})
+    # text_response = client.chat.completions.create(
+    #     model='gpt-4o',
+    #     messages=messages,
+    #     temperature=0.95,
+    #     stream=False,
+    # )
 
-        text = text_response.choices[0].message.content
-        
-        def generate():
-            for ch in text:
-                yield f"data: {ch}\n\n"
-                time.sleep(0.2)  # 글자당 지연 시간
+    text = text_response.choices[0].message.content
+    
+    def generate():
+        for ch in text:
+            yield f"data: {ch}\n\n"
+            time.sleep(0.2)  # 글자당 지연 시간
 
-        return Response(generate(), mimetype="text/event-stream")
+    return Response(generate(), mimetype="text/event-stream")
         # return Response(
         #         json.dumps({
         #             "KEY": os.getenv("OPENAI_API_KEY"),
@@ -127,10 +126,6 @@ def stream_by_character():
         #         status=200,
         #         mimetype='application/json'
         #     )
-    
-    except Exception as e:
-        payload = json.dumps({"message": str(e)})
-        yield f"event: error\ndata: {payload}\n\n"
 
 @app.route("/stream_test", methods=["POST"])
 def stream():
