@@ -26,13 +26,23 @@ def generate():
     # return jsonify({"result": f"AI 일기 test: {data.get('text', '')}"})
     return jsonify({"result": data, "KEY": os.getenv("OPENAI_API_KEY")})
 
+def generate_success(text):
+    yield f"data: {json.dumps({'error': False, 'message': ''})}\n\n"
+    for ch in text:
+        yield f"data: {json.dumps({'error': False, 'message': ch})}\n\n"
+        time.sleep(0.2)
+
+def generate_error(msg):
+    yield f"data: {json.dumps({'error': True, 'message': msg})}\n\n"
+
 @app.route("/stream", methods=["POST"])
 def stream_by_character():
     # JSON 파일 로딩
     def load_json(path):
         with open(path, 'r', encoding='utf-8') as json_file:
             return json.load(json_file)
-
+        
+    
     def detect_objects(image_link):
         client = vision.ImageAnnotatorClient()
         
@@ -94,7 +104,6 @@ def stream_by_character():
         final_prompt += f"텍스트: {text_prompt}"
 
         messages.append({'role': 'user', 'content': final_prompt})
-
         text_response = openai.ChatCompletion.create(
             model='gpt-5',
             messages=messages,
@@ -102,44 +111,18 @@ def stream_by_character():
             stream=False,
         )
 
-        # messages.append({'role': 'user', 'content': final_prompt})
-        # text_response = client.chat.completions.create(
-        #     model='gpt-4o',
-        #     messages=messages,
-        #     temperature=0.95,
-        #     stream=False,
-        # )
-
         text = text_response.choices[0].message.content
-        
-        def generate():
-            for ch in text:
-                yield f"data: {ch}\n\n"
-                time.sleep(0.2)  # 글자당 지연 시간
 
-        return Response(generate(), mimetype="text/event-stream")
-        # return Response(
-        #         json.dumps({
-        #             "KEY": os.getenv("OPENAI_API_KEY"),
-        #             "text": final_prompt,
-        #             "openai": f"{openai.__version__}",
-        #         }, ensure_ascii=False),
-        #         status=200,
-        #         mimetype='application/json'
-        #     )
+        return Response(generate_success(text), mimetype="text/event-stream")
     
     except Exception as e:
-            return jsonify({"error": f"{str(e)}"}), 500
+            return Response(generate_error(str(e)), mimetype="text/event-stream")
 
 @app.route("/stream_test", methods=["POST"])
 def stream():
     text = "AI 일기 생성 테스트입니다. 이 텍스트는 스트리밍 방식으로 전송됩니다."
-    def generate():
-        for ch in text:
-            yield f"data: {ch}\n\n"
-            time.sleep(0.2)  # 글자당 지연 시간
 
-    return Response(generate(), mimetype="text/event-stream")
+    return Response(generate_success(text), mimetype="text/event-stream")
 if __name__ == "__main__":
     os.environ.pop("HTTP_PROXY", None)
     os.environ.pop("HTTPS_PROXY", None)
