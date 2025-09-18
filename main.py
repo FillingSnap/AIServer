@@ -27,7 +27,6 @@ def generate():
     return jsonify({"result": data, "KEY": os.getenv("OPENAI_API_KEY")})
 
 def generate_success(text):
-    yield f"data: {json.dumps({'error': False, 'message': ''})}\n\n"
     for ch in text:
         yield f"data: {json.dumps({'error': False, 'message': ch})}\n\n"
         time.sleep(0.2)
@@ -107,7 +106,6 @@ def stream_by_character():
         text_response = openai.ChatCompletion.create(
             model='gpt-5',
             messages=messages,
-            temperature=0.95,
             stream=False,
         )
 
