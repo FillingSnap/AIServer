@@ -107,6 +107,7 @@ def stream_by_character():
             model='gpt-5',
             messages=messages,
             stream=False,
+            reasoning_effot ="minimal"
         )
 
         text = text_response.choices[0].message.content
